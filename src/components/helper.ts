@@ -7,7 +7,7 @@ import {
   setMinutes,
   parse,
   isValid,
-} from 'date-fns';
+} from "date-fns";
 
 export interface IDateTimeSlot {
   date: Date; // Date object
@@ -22,7 +22,8 @@ export interface ITimeSlot extends IDateTimeSlot {
 
 export function generateDateTimeSlots(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  minutesInterval: number = 15
 ): IDateTimeSlot[] {
   const slots: IDateTimeSlot[] = [];
   let currentSlot = startDate;
@@ -30,11 +31,11 @@ export function generateDateTimeSlots(
   while (isAfter(endDate, currentSlot) || isEqual(endDate, currentSlot)) {
     slots.push({
       date: currentSlot,
-      time: format(currentSlot, 'hh:mm a'),
+      time: format(currentSlot, "hh:mm a"),
       iso: currentSlot.toISOString(),
       timestamp: currentSlot.getTime(),
     });
-    currentSlot = addMinutes(currentSlot, 15);
+    currentSlot = addMinutes(currentSlot, minutesInterval);
   }
 
   return slots;
@@ -44,7 +45,7 @@ export const replaceTime = (
   originalDate: Date = new Date(),
   timeStr: string
 ) => {
-  const time = parse(timeStr, 'hh:mm a', originalDate);
+  const time = parse(timeStr, "hh:mm a", originalDate);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!isNaN(time as any)) {
     const newDate = setMinutes(
@@ -54,7 +55,7 @@ export const replaceTime = (
 
     return {
       date: newDate,
-      time: format(newDate, 'hh:mm a'),
+      time: format(newDate, "hh:mm a"),
       iso: newDate.toISOString(),
       timestamp: newDate.getTime(),
     };
@@ -63,26 +64,29 @@ export const replaceTime = (
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function formatTime(input: any) {
-  const cleanedInput = input.replace(/[^0-9a-z:]/gi, '').toUpperCase();
+  const cleanedInput = input.replace(/[^0-9a-z:]/gi, "").toUpperCase();
 
   const validTimeRegex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)?$/i;
+  // const validTimeRegex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s(AM|PM)?$/i;
+  console.log(input, "input ->>");
+  console.log(validTimeRegex.test(input), "validTimeRegex.test(input)");
   if (!input || validTimeRegex.test(input)) {
     // If the input is valid or empty, return it as is
-    return input || '';
+    return input || "";
   }
-  const date = parse(cleanedInput, 'hh:mmaaa', new Date());
+  const date = parse(cleanedInput, "hh:mmaaa", new Date());
 
   if (isValid(date)) {
-    return format(date, 'hh:mm a');
+    return format(date, "hh:mm a");
   } else {
     const parsedTime = parseTime(input);
-    if (parsedTime !== 'Invalid time') {
-      const time = parse(parsedTime, 'hh:mm a', new Date());
+    if (parsedTime !== "Invalid time") {
+      const time = parse(parsedTime, "hh:mm a", new Date());
       const newDate = setMinutes(
         setHours(new Date(), time.getHours()),
         time.getMinutes()
       );
-      return format(newDate, 'hh:mm a');
+      return format(newDate, "hh:mm a");
     }
   }
 }
@@ -95,10 +99,10 @@ const parseTime = (input: string) => {
   const timeStr = input.trim().toLowerCase();
   // Handle "AM" and "PM" inputs
   if (amPmRegex.test(timeStr)) {
-    if (timeStr.includes('am')) {
-      return '12:00 AM';
-    } else if (timeStr.includes('pm')) {
-      return '12:00 PM';
+    if (timeStr.includes("am")) {
+      return "12:00 AM";
+    } else if (timeStr.includes("pm")) {
+      return "12:00 PM";
     }
   }
 
@@ -109,40 +113,18 @@ const parseTime = (input: string) => {
     const minutes = parseInt(match[2], 10);
 
     if (hours < 1 || hours > 12) {
-      return 'Invalid time';
+      return "Invalid time";
     }
 
-    if (timeStr.includes('pm') && hours !== 12) {
+    if (timeStr.includes("pm") && hours !== 12) {
       hours += 12;
-    } else if (timeStr.includes('am') && hours === 12) {
+    } else if (timeStr.includes("am") && hours === 12) {
       hours = 0;
     }
 
-    return `${hours.toString().padStart(2, '0')}:${minutes
+    return `${hours.toString().padStart(2, "0")}:${minutes
       .toString()
-      .padStart(2, '0')} ${hours < 12 ? 'AM' : 'PM'}`;
+      .padStart(2, "0")} ${hours < 12 ? "AM" : "PM"}`;
   }
-  return 'Invalid time';
+  return "Invalid time";
 };
-
-function isTimeValid(timeStr: string) {
-  const timeRegex = /^([01][0-9]|2[0-3]):[0-5][0-9]$/; // HH:MM format
-
-  if (timeRegex.test(timeStr)) {
-    const [hours, minutes] = timeStr.split(':');
-    const parsedHours = parseInt(hours.padEnd(2, '0'), 10);
-    const parsedMinutes = parseInt(minutes.padEnd(2, '0'), 10);
-
-    // Check if hours and minutes are within valid range
-    if (
-      parsedHours >= 0 &&
-      parsedHours <= 23 &&
-      parsedMinutes >= 0 &&
-      parsedMinutes <= 59
-    ) {
-      return true; // Valid time
-    }
-  }
-
-  return false; // Invalid time
-}
