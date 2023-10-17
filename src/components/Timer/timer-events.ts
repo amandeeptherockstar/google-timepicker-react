@@ -37,4 +37,11 @@ const resetTimer = (start?: Date | string | undefined) => {
   } as any);
 };
 
-export { startTimer, pauseTimer, stopTimer, resetTimer };
+const updateTimer = (seconds: number) => {
+  publishEvent("update-timer", {
+    seconds
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any);
+}
+
+export { startTimer, pauseTimer, stopTimer, resetTimer, updateTimer };
