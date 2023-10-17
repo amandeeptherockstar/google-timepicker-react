@@ -4,12 +4,12 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { addMinutes, startOfDay } from "date-fns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import TimerPicker, { OptionType } from "./components/TimePicker";
-import "./App.css";
 // import Timer from "./components/Timer";
 import TimerOperations from "./components/Timer/TimerOperations";
 import TimerUpdate from "./components/Timer/TimerUpdate";
 import TimerContextProvider from "./components/Timer/TimerContext";
 import TimerContextOperations from "./components/Timer/TimerContextOperations";
+import TimerUI from "./components/Timer/TimerUI";
 
 export const minutesInterval = 15;
 
@@ -45,6 +45,9 @@ function App() {
       {/* <TimerOperations /> */}
       <TimerContextOperations />
       <TimerUpdate />
+      <br /> 
+      <br />
+      <TimerUI />
     </TimerContextProvider>
   );
 }
