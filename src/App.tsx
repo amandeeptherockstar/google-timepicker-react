@@ -3,9 +3,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { addMinutes, startOfDay } from "date-fns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import TimerPicker, { OptionType } from "./components/TimePicker";
+// import TimerPicker, { OptionType } from "./components/TimePicker";
+import TimerPickerO, {
+  OptionType as TimePickerType,
+} from "./components/TimePickerO";
 // import Timer from "./components/Timer";
-import TimerOperations from "./components/Timer/TimerOperations";
+import TimerOperations, {
+  OptionType,
+} from "./components/Timer/TimerOperations";
 import TimerUpdate from "./components/Timer/TimerUpdate";
 import TimerContextProvider from "./components/Timer/TimerContext";
 import TimerContextOperations from "./components/Timer/TimerContextOperations";
@@ -21,23 +26,25 @@ function App() {
     setStartTime(time);
   }, []);
 
-  console.log('APp started')
+  console.log("APp started");
 
   return (
     <TimerContextProvider>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div className="flex gap-x-2">
           <DatePicker value={date} onChange={setDate} format="dd-MM-yyyy" />
-          <TimerPicker
+          <TimerPickerO
             startDate={date}
             placeholder="Start Time"
             onSelect={onStartSelect}
+            defaultDate={new Date()}
           />
-          <TimerPicker
+          <TimerPickerO
             placeholder="End Time"
             startDate={
               startTime ? addMinutes(startTime.date, minutesInterval) : date
             }
+            defaultDate={new Date(new Date().setHours(20, 0, 0, 0))}
           />
         </div>
       </LocalizationProvider>
@@ -45,7 +52,7 @@ function App() {
       {/* <TimerOperations /> */}
       <TimerContextOperations />
       <TimerUpdate />
-      <br /> 
+      <br />
       <br />
       <TimerUI />
     </TimerContextProvider>
